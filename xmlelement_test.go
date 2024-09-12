@@ -15,8 +15,8 @@
 package colly_test
 
 import (
+	"github.com/Sinblio/colly"
 	"github.com/antchfx/htmlquery"
-	"github.com/gocolly/colly/v2"
 	"reflect"
 	"strings"
 	"testing"

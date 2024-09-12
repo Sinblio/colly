@@ -181,6 +181,16 @@ func (e *AlreadyVisitedError) Error() string {
 	return fmt.Sprintf("%q already visited", e.Destination)
 }
 
+// ForbiddenRedirectError is the error type for redirects when FollowRedirects is False
+type ForbiddenRedirectError struct {
+	RedirectURL *url.URL
+}
+
+// Error implements error interface.
+func (e *ForbiddenRedirectError) Error() string {
+	return fmt.Sprintf("Forbidden redirect to %q", e.RedirectURL)
+}
+
 type htmlCallbackContainer struct {
 	Selector string
 	Function HTMLCallback
@@ -1360,7 +1370,7 @@ func (c *Collector) Clone() *Collector {
 func (c *Collector) checkRedirectFunc() func(req *http.Request, via []*http.Request) error {
 	return func(req *http.Request, via []*http.Request) error {
 		if err := c.checkFilters(req.URL.String(), req.URL.Hostname()); err != nil {
-			return ErrRedirect
+			return &ForbiddenRedirectError{req.URL}
 		}
 
 		// allow redirects to the original destination

@@ -215,7 +215,8 @@ var (
 	// ErrForbiddenURL is the error thrown if visiting
 	// a URL which is not allowed by URLFilters
 	ErrForbiddenURL = errors.New("ForbiddenURL")
-
+	// ErrRedirect is thrown when a redirect is detected, but not allowed
+	ErrRedirect = errors.New("Redirect when not allowed")
 	// ErrNoURLFiltersMatch is the error thrown if visiting
 	// a URL which is not allowed by URLFilters
 	ErrNoURLFiltersMatch = errors.New("No URLFilters match")
@@ -1358,7 +1359,7 @@ func (c *Collector) Clone() *Collector {
 func (c *Collector) checkRedirectFunc() func(req *http.Request, via []*http.Request) error {
 	return func(req *http.Request, via []*http.Request) error {
 		if err := c.checkFilters(req.URL.String(), req.URL.Hostname()); err != nil {
-			return fmt.Errorf("Not following redirect to %q: %w", req.URL, err)
+			return ErrRedirect
 		}
 
 		// allow redirects to the original destination
